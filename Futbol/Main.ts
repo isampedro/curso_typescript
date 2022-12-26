@@ -1,4 +1,4 @@
-import Equipos from "./Controladores/Equipos";
+import Equipos from "./Consultas/Equipos";
 
 
 async function main() {
