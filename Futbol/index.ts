@@ -1,21 +1,24 @@
-import * as express from 'express';
+import express from 'express';
 import {Request, Response} from 'express';
-import Equipos from "./Consultas/Equipos";
+import {StatusCodes} from "http-status-codes";
+import EquiposHandler from "./Consultas/EquiposHandler";
 
 const PORT = 3000;
 
 async function main() {
-    const equipos = new Equipos();
-    await equipos.leerEquipos('equipos_mas_valiosos.xlsx');
+    const equiposHandler = new EquiposHandler();
     const app = express();
 
-    app.listen(PORT, () => {
-        console.log("El servidor está corriendo en el puerto 3000")
-    })
+    app.listen(PORT, () => console.log("El servidor está corriendo en el puerto " + PORT));
 
-    app.get('/equipos', (req: Request, res: Response) => {
+    // POST falso
+    app.post('/equipos', async (req: Request, res: Response) => await equiposHandler.leerEquipos(req,res));
 
-    })
+    // GET
+    app.get('/equipos', (req: Request, res: Response) => equiposHandler.obtenerPrimerosN(req, res));
+    app.get('/equipos/edad_promedio', (req: Request, res: Response) => equiposHandler.obtenerEdadPromedioPrimerosN(req, res));
+    app.get('/equipos/:equipo', (req: Request, res: Response) => equiposHandler.obtenerEquipo(req, res));
+    app.get('*', (req, res) => res.status(StatusCodes.NOT_FOUND).send('URL inválida'));
 }
 
 main();
